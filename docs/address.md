@@ -121,4 +121,26 @@ Response (failed):
 
 ## Remove Address
 
+Endpoint: DELETE /api/v1/contacts/`:contactID`/addresses/`:addressID`
+
+Request Header:
+
+- x-api-header: `${token here}`
+
+Response (success):
+
+```json
+{
+  "data": "ok"
+}
+```
+
+Response (failed):
+
+```json
+{
+  "errors": ["address is not found"]
+}
+```
+
 ## List Address
