@@ -1,0 +1,12 @@
+version: "3"
+services:
+  db:
+    image: "mysql:8.0.26"
+    container_name: "ts-restful-db"
+    environment:
+      - MYSQL_DATABASE=learn_typescript_restful_api
+      - MYSQL_USER=ts_user
+      - MYSQL_PASSWORD=ts_pwd
+      - MYSQL_ROOT_PASSWORD=root_pwd
+    ports:
+      - 3306:3306
