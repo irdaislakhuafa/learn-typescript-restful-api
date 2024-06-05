@@ -93,7 +93,7 @@ Response (failed):
 }
 ```
 
-## Update User
+## Update Current User
 
 Endpoint: PATCH /api/v1/users/current
 
@@ -129,4 +129,28 @@ Response (failed):
 }
 ```
 
-## Logout User
+## Logout Current User
+
+Endpoint: DELETE /api/v1/users/current
+
+Request Header:
+
+- x-api-header: `${token here}`
+
+Request:
+
+Response (success):
+
+```json
+{
+  "data": "ok"
+}
+```
+
+Response (failed):
+
+```json
+{
+  "errors": ["unauthorized"]
+}
+```
