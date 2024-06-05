@@ -114,4 +114,26 @@ Response (failed):
 
 ## Delete Contact
 
+Endpoint: DELETE /api/v1/contacts/:id
+
+Request Header:
+
+- x-api-header: `${token here}`
+
+Response (success):
+
+```json
+{
+  "data": "ok"
+}
+```
+
+Response (failed):
+
+```json
+{
+  "errors": ["contact not found"]
+}
+```
+
 ## Search Contact
