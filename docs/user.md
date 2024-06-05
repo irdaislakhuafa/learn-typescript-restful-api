@@ -66,8 +66,67 @@ Response (failed):
 }
 ```
 
-## Get User
+## Get Current User
+
+Endpoint: GET /api/v1/users/current
+
+Request Header:
+
+- x-api-header: `${token here}`
+
+Response (success):
+
+```json
+{
+  "data": {
+    "name": "Irda Islakhu Afa",
+    "username": "Irda Islakhu Afa"
+  }
+}
+```
+
+Response (failed):
+
+```json
+{
+  "errors": ["unauthorized"]
+}
+```
 
 ## Update User
+
+Endpoint: PATCH /api/v1/users/current
+
+Request Header:
+
+- x-api-header: `${token here}`
+
+Request:
+
+```json
+{
+  "name": "Irda Islakhu Afa",
+  "username": "irdaislakhuafa"
+}
+```
+
+Response (success):
+
+```json
+{
+  "data": {
+    "name": "Irda Islakhu Afa",
+    "username": "Irda Islakhu Afa"
+  }
+}
+```
+
+Response (failed):
+
+```json
+{
+  "errors": ["unauthorized"]
+}
+```
 
 ## Logout User
