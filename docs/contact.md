@@ -156,6 +156,11 @@ Response (success):
 
 ```json
 {
+  "paging": {
+    "current_page": 1,
+    "total": 10,
+    "size": 10
+  },
   "data": [
     {
       "id": 1,
@@ -179,6 +184,6 @@ Response (failed):
 
 ```json
 {
-  "errors": ["contact not found"]
+  "errors": ["unauthorized"]
 }
 ```
