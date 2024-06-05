@@ -137,3 +137,48 @@ Response (failed):
 ```
 
 ## Search Contact
+
+Endpoint: SEARCH /api/v1/contacts
+
+Query Parameter:
+
+- `name`: string, contact first_name or last_name, optional
+- `phone`: string, contact phone, optional
+- `email`: string, contact email, optional
+- `page`: number, page number, default 1
+- `size`: number, size data, default 1
+
+Request Header:
+
+- x-api-header: `${token here}`
+
+Response (success):
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "first_name": "Irda",
+      "last_name": "Islakhu Afa",
+      "email": "i@gmail.com",
+      "phone": "0812345678910"
+    },
+    {
+      "id": 2,
+      "first_name": "Irda",
+      "last_name": "Islakhu Afa",
+      "email": "i@gmail.com",
+      "phone": "0812345678910"
+    }
+  ]
+}
+```
+
+Response (failed):
+
+```json
+{
+  "errors": ["contact not found"]
+}
+```
