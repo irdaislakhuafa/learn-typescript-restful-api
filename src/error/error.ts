@@ -21,7 +21,7 @@ export class ResponseError extends Error {
 			// stackLines[0] is "Error"
 			// stackLines[1] is the current function (getCallerInfo)
 			// stackLines[2] is the caller function
-			const callerLine = stackLines[2]
+			const callerLine = stackLines[1]
 			const callerInfo = callerLine.trim().match(/at (.+) \((.+):(\d+):(\d+)\)/)
 			if (callerInfo) {
 				const caller = {
