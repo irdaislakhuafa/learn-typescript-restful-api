@@ -1,6 +1,4 @@
 import type { User } from "@prisma/client";
-import type { z } from "zod";
-import type { UserValidation } from "../validation/user.validation";
 
 export type UserResponse = {
 	username: string;
@@ -8,7 +6,11 @@ export type UserResponse = {
 	token?: string;
 }
 
-export type RegisterUserRequest = z.infer<typeof UserValidation.REGISTER>
+export type RegisterUserRequest = {
+	name: string;
+	username: string;
+	password: string;
+}
 
 export function toUserResponse(user: User): UserResponse {
 	return {
