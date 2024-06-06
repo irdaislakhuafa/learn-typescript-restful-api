@@ -5,5 +5,5 @@ export type ResponseData<T> = {
 		size: number,
 	}
 	data?: T
-	errors?: [string]
+	errors?: string[],
 }

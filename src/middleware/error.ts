@@ -8,7 +8,7 @@ export const middlewareError = async (err: Error, req: Request, res: Response, n
 	let response: ResponseData<any>;
 	if (err instanceof ResponseError) {
 		log.error(`${err.file}:${err.line} -- ${err.message}`)
-		response = { errors: [err.message] }
+		response = { errors: err.message.split(", ") }
 		res.status(err.code).json(response)
 	} else {
 		log.error(`${err.stack}`)

@@ -15,7 +15,7 @@ export class ResponseError extends Error {
 		const stack = this.stack
 		if (stack) {
 			// Stack trace lines differ between environments; adjust the following to your needs
-			const stackLines = stack.split("\n")
+			const stackLines = stack.split('\n')
 
 			// Typically, the third line in the stack trace contains the caller information
 			// stackLines[0] is "Error"
