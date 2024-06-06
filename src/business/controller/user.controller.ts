@@ -7,8 +7,7 @@ import { UserService } from "../service/user.service";
 export class UserController {
 	static async register(req: Request, res: Response, next: NextFunction) {
 		try {
-			const request = req.body as RegisterUserRequest
-			const result = await UserService.register(request)
+			const result = await UserService.register(req.body as RegisterUserRequest)
 			const response: ResponseData<UserResponse> = { data: result }
 			res.status(Code.SUCCESS).json(response)
 		} catch (e) { next(e) }
