@@ -1,8 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import { log } from "../application/log";
-import { Code } from "../code/code";
-import { ResponseError } from "../error/error";
-import type { ResponseData } from "../model/generic.model";
+import type { ResponseData } from "../business/model/generic.model";
+import { Code } from "../utils/code/code";
+import { ResponseError } from "../utils/error/error";
 
 export const middlewareError = async (err: Error, req: Request, res: Response, next: NextFunction) => {
 	let response: ResponseData<any>;

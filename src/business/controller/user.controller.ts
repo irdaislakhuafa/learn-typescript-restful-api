@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { Code } from "../code/code";
+import { Code } from "../../utils/code/code";
 import type { ResponseData } from "../model/generic.model";
 import type { RegisterUserRequest, UserResponse } from "../model/user.model";
 import { UserService } from "../service/user.service";
