@@ -1,12 +1,12 @@
 import type { User } from "@prisma/client";
 import bcrypt from 'bcrypt';
-import { prismaClient } from "../application/db";
-import { Code } from "../code/code";
-import { ResponseError } from "../error/error";
+import { prismaClient } from "../../application/db";
+import { Code } from "../../utils/code/code";
+import { ResponseError } from "../../utils/error/error";
+import { UserValidation } from "../../utils/validation/user.validation";
+import { Validation } from "../../utils/validation/validation";
 import type { RegisterUserRequest, UserResponse } from "../model/user.model";
 import { toUserResponse } from '../model/user.model';
-import { UserValidation } from "../validation/user.validation";
-import { Validation } from "../validation/validation";
 
 export class UserService {
 	static async register(params: RegisterUserRequest): Promise<UserResponse> {
