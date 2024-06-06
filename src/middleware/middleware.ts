@@ -4,7 +4,7 @@ import type { ResponseData } from "../business/model/generic.model";
 import { Code } from "../utils/code/code";
 import { ResponseError } from "../utils/error/error";
 
-export const middlewareError = async (err: Error, req: Request, res: Response, next: NextFunction) => {
+export const middleware = async (err: Error, req: Request, res: Response, next: NextFunction) => {
 	let response: ResponseData<any>;
 	const l = log.child({
 		request_id: req.headers["x-request-id"] || "N/A",
@@ -13,13 +13,18 @@ export const middlewareError = async (err: Error, req: Request, res: Response, n
 	})
 
 	l.info("requested")
-	if (err instanceof ResponseError) {
-		l.error(`${err.file}:${err.line} -- ${err.message}`)
-		response = { errors: err.message.split(", ") }
-		res.status(err.code).json(response)
+
+	if (err) {
+		if (err instanceof ResponseError) {
+			l.error(`${err.file}:${err.line} -- ${err.message}`)
+			response = { errors: err.message.split(", ") }
+			res.status(err.code).json(response)
+		} else {
+			l.error(`${err.stack}`)
+			response = { errors: [err.message] }
+			res.status(Code.INTERNAL_SERVER_ERROR).json(response)
+		}
 	} else {
-		l.error(`${err.stack}`)
-		response = { errors: [err.message] }
-		res.status(Code.INTERNAL_SERVER_ERROR).json(response)
+		l.error(res.json())
 	}
 }
