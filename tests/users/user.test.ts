@@ -1,24 +1,26 @@
 import supertest from "supertest"
-import { v4 } from "uuid"
 import { log } from "../../src/application/log"
 import { web } from "../../src/application/web"
-import { Code } from "../../src/code/code"
-import { ResponseData } from "../../src/model/generic.model"
-import { RegisterUserRequest, UserResponse } from "../../src/model/user.model"
+import { ResponseData } from "../../src/business/model/generic.model"
+import { LoginUserRequest, RegisterUserRequest, UserResponse } from "../../src/business/model/user.model"
+import { Code } from "../../src/utils/code/code"
+import { UserUtil } from "./util.test"
 
 describe("POST /api/v1/auth/register", () => {
 	it("must return error if username already exists", async () => {
+		await UserUtil.create()
 		const res = await supertest(web)
 			.post("/api/v1/auth/register")
 			.send({
-				name: "irda islakhu afa",
-				username: `irdaislakhuafa`,
-				password: "12345678"
+				name: "test",
+				username: `test`,
+				password: "test"
 			} as RegisterUserRequest)
 
 		log.debug(res.body)
 		expect(res.status).toBe(Code.BAD_REQUEST)
 		expect((res.body as ResponseData<any>).errors).toBeTruthy()
+		await UserUtil.delete()
 	})
 
 	it("must return error if request invalid", async () => {
@@ -39,20 +41,73 @@ describe("POST /api/v1/auth/register", () => {
 	})
 
 	it("must success", async () => {
-		const username = `${v4()}`
+		await UserUtil.delete()
 		const res = await supertest(web)
 			.post("/api/v1/auth/register")
 			.send({
-				name: "irda islakhu afa",
-				username: username,
-				password: "12345678"
+				name: "test",
+				username: "test",
+				password: "test"
 			} as RegisterUserRequest)
 
 		const body = (res.body as ResponseData<UserResponse>)
 		log.debug(res.body)
 		expect(res.status).toBe(Code.SUCCESS)
 		expect(body.errors).toBeFalsy()
-		expect(body.data?.name).toBe("irda islakhu afa")
-		expect(body.data?.username).toBe(username)
+		expect(body.data?.name).toBe("test")
+		expect(body.data?.username).toBe("test")
+	})
+})
+
+describe("POST /api/v1/auth/login", () => {
+	afterEach(UserUtil.delete)
+	beforeEach(UserUtil.create)
+
+	it("login must success", async () => {
+		const res = await supertest(web)
+			.post("/api/v1/auth/login")
+			.send({
+				username: "test",
+				password: "test"
+			} as LoginUserRequest)
+
+		const body = (res.body as ResponseData<UserResponse>)
+
+		expect(res.status).toBe(Code.SUCCESS)
+		expect(body.data).toBeTruthy()
+		expect(body.data?.name).toBe("test")
+		expect(body.data?.username).toBe("test")
+		expect(body.data?.token).toBeDefined()
+	})
+
+	it("login rejected coz username is wrong", async () => {
+		const res = await supertest(web)
+			.post("/api/v1/auth/login")
+			.send({
+				username: "wrong",
+				password: "test"
+			} as LoginUserRequest)
+
+		const body = (res.body as ResponseData<UserResponse>)
+
+		expect(res.status).toBe(Code.UNAUTHORIZED)
+		expect(body.data).toBeFalsy()
+		expect(body.errors).toBeTruthy()
+		expect(body.errors?.join(", ").includes("username")).toBeTruthy()
+	})
+	it("login rejected coz pwd is wrong", async () => {
+		const res = await supertest(web)
+			.post("/api/v1/auth/login")
+			.send({
+				username: "test",
+				password: "wrong"
+			} as LoginUserRequest)
+
+		const body = (res.body as ResponseData<UserResponse>)
+
+		expect(res.status).toBe(Code.UNAUTHORIZED)
+		expect(body.data).toBeFalsy()
+		expect(body.errors).toBeTruthy()
+		expect(body.errors?.join(", ").includes("password")).toBeTruthy()
 	})
 })

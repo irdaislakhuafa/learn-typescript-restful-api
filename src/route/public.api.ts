@@ -7,3 +7,4 @@ export const publicRouter = express.Router({
 })
 
 publicRouter.post("/api/v1/auth/register", UserController.register)
+publicRouter.post("/api/v1/auth/login", UserController.login)
