@@ -78,4 +78,35 @@ describe("POST /api/v1/auth/login", () => {
 		expect(body.data?.username).toBe("test")
 		expect(body.data?.token).toBeDefined()
 	})
+
+	it("login rejected coz username is wrong", async () => {
+		const res = await supertest(web)
+			.post("/api/v1/auth/login")
+			.send({
+				username: "wrong",
+				password: "test"
+			} as LoginUserRequest)
+
+		const body = (res.body as ResponseData<UserResponse>)
+
+		expect(res.status).toBe(Code.UNAUTHORIZED)
+		expect(body.data).toBeFalsy()
+		expect(body.errors).toBeTruthy()
+		expect(body.errors?.join(", ").includes("username")).toBeTruthy()
+	})
+	it("login rejected coz pwd is wrong", async () => {
+		const res = await supertest(web)
+			.post("/api/v1/auth/login")
+			.send({
+				username: "test",
+				password: "wrong"
+			} as LoginUserRequest)
+
+		const body = (res.body as ResponseData<UserResponse>)
+
+		expect(res.status).toBe(Code.UNAUTHORIZED)
+		expect(body.data).toBeFalsy()
+		expect(body.errors).toBeTruthy()
+		expect(body.errors?.join(", ").includes("password")).toBeTruthy()
+	})
 })
