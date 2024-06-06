@@ -6,12 +6,13 @@ import type { ResponseData } from "../model/generic.model";
 
 export const middlewareError = async (err: Error, req: Request, res: Response, next: NextFunction) => {
 	let response: ResponseData<any>;
+	const l = log.child({ request_id: req.headers["x-request-id"] || "N/A" })
 	if (err instanceof ResponseError) {
-		log.error(`${err.file}:${err.line} -- ${err.message}`)
+		l.error(`${err.file}:${err.line} -- ${err.message}`)
 		response = { errors: err.message.split(", ") }
 		res.status(err.code).json(response)
 	} else {
-		log.error(`${err.stack}`)
+		l.error(`${err.stack}`)
 		response = { errors: [err.message] }
 		res.status(Code.INTERNAL_SERVER_ERROR).json(response)
 	}
