@@ -7,9 +7,8 @@ import { Code } from "../../src/utils/code/code"
 import { UserUtil } from "./util.test"
 
 describe("POST /api/v1/auth/register", () => {
-	afterEach(UserUtil.delete)
-
 	it("must return error if username already exists", async () => {
+		await UserUtil.create()
 		const res = await supertest(web)
 			.post("/api/v1/auth/register")
 			.send({
@@ -21,6 +20,7 @@ describe("POST /api/v1/auth/register", () => {
 		log.debug(res.body)
 		expect(res.status).toBe(Code.BAD_REQUEST)
 		expect((res.body as ResponseData<any>).errors).toBeTruthy()
+		await UserUtil.delete()
 	})
 
 	it("must return error if request invalid", async () => {
@@ -41,6 +41,7 @@ describe("POST /api/v1/auth/register", () => {
 	})
 
 	it("must success", async () => {
+		await UserUtil.delete()
 		const res = await supertest(web)
 			.post("/api/v1/auth/register")
 			.send({
@@ -59,8 +60,8 @@ describe("POST /api/v1/auth/register", () => {
 })
 
 describe("POST /api/v1/auth/login", () => {
-	beforeEach(UserUtil.create)
 	afterEach(UserUtil.delete)
+	beforeEach(UserUtil.create)
 
 	it("login must success", async () => {
 		const res = await supertest(web)
