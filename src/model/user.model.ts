@@ -1,11 +1,10 @@
+import type { z } from "zod";
+import type { UserValidation } from "../validation/user.validation";
+
 export type UserResponse = {
 	username: string;
 	name: string;
 	token?: string;
 }
 
-export type RegisterUserRequest = {
-	name: string;
-	username: string;
-	password: string;
-}
+export type RegisterUserRequest = z.infer<typeof UserValidation.REGISTER>
