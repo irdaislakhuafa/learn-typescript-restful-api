@@ -1,4 +1,4 @@
-export type Response<T> = {
+export type ResponseData<T> = {
 	paging?: {
 		current_page: number,
 		total: number,
