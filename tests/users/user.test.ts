@@ -1,19 +1,22 @@
 import supertest from "supertest"
-import { v4 } from "uuid"
 import { log } from "../../src/application/log"
 import { web } from "../../src/application/web"
-import { Code } from "../../src/code/code"
-import { ResponseData } from "../../src/model/generic.model"
-import { RegisterUserRequest, UserResponse } from "../../src/model/user.model"
+import { ResponseData } from "../../src/business/model/generic.model"
+import { RegisterUserRequest, UserResponse } from "../../src/business/model/user.model"
+import { Code } from "../../src/utils/code/code"
+import { UserUtil } from "./util.test"
 
 describe("POST /api/v1/auth/register", () => {
+	beforeEach(UserUtil.create)
+	afterEach(UserUtil.delete)
+
 	it("must return error if username already exists", async () => {
 		const res = await supertest(web)
 			.post("/api/v1/auth/register")
 			.send({
-				name: "irda islakhu afa",
-				username: `irdaislakhuafa`,
-				password: "12345678"
+				name: "test",
+				username: `test`,
+				password: "test"
 			} as RegisterUserRequest)
 
 		log.debug(res.body)
@@ -39,13 +42,12 @@ describe("POST /api/v1/auth/register", () => {
 	})
 
 	it("must success", async () => {
-		const username = `${v4()}`
 		const res = await supertest(web)
 			.post("/api/v1/auth/register")
 			.send({
-				name: "irda islakhu afa",
-				username: username,
-				password: "12345678"
+				name: "test",
+				username: "test",
+				password: "test"
 			} as RegisterUserRequest)
 
 		const body = (res.body as ResponseData<UserResponse>)
@@ -53,6 +55,6 @@ describe("POST /api/v1/auth/register", () => {
 		expect(res.status).toBe(Code.SUCCESS)
 		expect(body.errors).toBeFalsy()
 		expect(body.data?.name).toBe("irda islakhu afa")
-		expect(body.data?.username).toBe(username)
+		expect(body.data?.username).toBe("test")
 	})
 })
