@@ -1,3 +1,4 @@
+import { User } from "@prisma/client"
 import bcrypt from "bcrypt"
 import { prismaClient } from "../../src/application/db"
 export class UserUtil {
@@ -20,5 +21,9 @@ export class UserUtil {
 				}
 			})
 		}
+	}
+
+	static async get(): Promise<User | null> {
+		return await prismaClient.user.findUnique({ where: { username: "test" } })
 	}
 }
