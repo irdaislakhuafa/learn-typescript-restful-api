@@ -8,7 +8,7 @@ export type ContactResponse = {
 	phone: string
 }
 
-export type ContactCreateRequest = {
+export type CreateContactRequest = {
 	first_name: string;
 	last_name?: string;
 	email?: string;
