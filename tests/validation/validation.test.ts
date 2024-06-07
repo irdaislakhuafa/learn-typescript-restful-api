@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { Validation } from "../../src/validation/validation"
+import { Validation } from "../../src/utils/validation/validation"
 
 describe("validation", () => {
 	const obj = z.object({
