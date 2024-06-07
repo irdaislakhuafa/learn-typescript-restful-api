@@ -42,4 +42,25 @@ describe("POST /api/v1/contacts", () => {
 		}
 
 	})
+
+	it("test must rejected if create new contact coz invalid value", async () => {
+		const user = await UserTest.get()
+		expect(user).toBeTruthy()
+
+
+		const res = await supertest(web)
+			.post(url)
+			.set(Constant.X_API_TOKEN, "test")
+			.send({
+				first_name: "",
+				phone: "",
+			} as CreateContactRequest)
+
+		const body = (res.body as ResponseData<ContactResponse>)
+		expect(res.status).toBe(Code.BAD_REQUEST)
+		expect(body.data).toBeUndefined()
+		expect(body.errors).toBeDefined()
+		expect(body.errors?.join(", ").includes("first_name")).toBeTruthy()
+		expect(body.errors?.join(", ").includes("phone")).toBeTruthy()
+	})
 })

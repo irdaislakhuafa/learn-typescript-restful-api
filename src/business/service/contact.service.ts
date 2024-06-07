@@ -16,7 +16,7 @@ export class ContactService {
 		const created = await prismaClient.contact.create({
 			data: {
 				...{ user_id: currentUser.id },
-				...params
+				...filteredParam
 			}
 		})
 
