@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt"
 import supertest from "supertest"
 import { validate } from "uuid"
-import { prismaClient } from "../src/application/db"
+import { pc } from "../src/application/db"
 import { log } from "../src/application/log"
 import { web } from "../src/application/web"
 import { ResponseData } from "../src/business/model/generic.model"
@@ -171,7 +171,7 @@ describe("PATCH /api/v1/users/current", () => {
 	})
 
 	it("must success update password", async () => {
-		const oldUser = await prismaClient.user.findFirst({ where: { username: "test" } })
+		const oldUser = await pc.user.findFirst({ where: { username: "test" } })
 		expect(oldUser).toBeTruthy()
 
 		const res = await supertest(web)
@@ -179,7 +179,7 @@ describe("PATCH /api/v1/users/current", () => {
 			.set(Constant.X_API_TOKEN, "test")
 			.send({ password: "xx" } as UpdateUserRequest)
 
-		const updatedUser = await prismaClient.user.findFirst({ where: { username: "test" } })
+		const updatedUser = await pc.user.findFirst({ where: { username: "test" } })
 		expect(updatedUser).toBeTruthy()
 
 

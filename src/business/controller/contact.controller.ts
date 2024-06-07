@@ -16,4 +16,14 @@ export class ContactController {
 			} else { throw new ResponseError(Code.UNAUTHORIZED, "unauthorized") }
 		} catch (e) { next(e) }
 	}
+
+	static async get(req: AuthRequest, res: Response, next: NextFunction) {
+		try {
+			if (req.user) {
+				const result = await ContactService.get(req.user, Number(req.params.contactID))
+				const response: ResponseData<ContactResponse> = { data: result }
+				res.status(Code.SUCCESS).json(response).end()
+			} else { throw new ResponseError(Code.UNAUTHORIZED, "unauthorized") }
+		} catch (e) { next(e) }
+	}
 }

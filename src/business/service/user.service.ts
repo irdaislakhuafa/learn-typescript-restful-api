@@ -1,7 +1,7 @@
 import type { User } from "@prisma/client";
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from "uuid";
-import { prismaClient } from "../../application/db";
+import { pc } from "../../application/db";
 import { Code } from "../../utils/code/code";
 import { ResponseError } from "../../utils/error/error";
 import { UserValidation } from "../../utils/validation/user.validation";
@@ -16,14 +16,14 @@ export class UserService {
 			throw new ResponseError(err.code, err.message)
 		}
 
-		const isUsernameExists = await prismaClient.user.count({ where: { username: filteredParam.username } }) > 0
+		const isUsernameExists = await pc.user.count({ where: { username: filteredParam.username } }) > 0
 		if (isUsernameExists) {
 			throw new ResponseError(Code.BAD_REQUEST, `username ${filteredParam.username} already exists`)
 		}
 
 		filteredParam.password = await bcrypt.hash(filteredParam.password, 10)
 
-		const created: User = await prismaClient.user.create({ data: filteredParam })
+		const created: User = await pc.user.create({ data: filteredParam })
 		const result: UserResponse = toUserResponse(created)
 
 		return result
@@ -35,7 +35,7 @@ export class UserService {
 			throw new ResponseError(err.code, err.message)
 		}
 
-		const user: User | null = await prismaClient.user.findUnique({ where: { username: filteredParam.username } })
+		const user: User | null = await pc.user.findUnique({ where: { username: filteredParam.username } })
 		if (!user) {
 			throw new ResponseError(Code.UNAUTHORIZED, `username '${filteredParam.username}' not found`)
 		}
@@ -45,7 +45,7 @@ export class UserService {
 			throw new ResponseError(Code.UNAUTHORIZED, `username or password is wrong`)
 		}
 
-		const updated: User | null = await prismaClient.user.update({
+		const updated: User | null = await pc.user.update({
 			where: { username: filteredParam.username },
 			data: { token: uuidv4() }
 		}).catch((err) => {
@@ -74,7 +74,7 @@ export class UserService {
 		current.name = filteredParam.name ? filteredParam.name : current.name
 		current.password = filteredParam.password ? await bcrypt.hash(filteredParam.password, 10) : current.password
 
-		const updated = await prismaClient.user.update({
+		const updated = await pc.user.update({
 			where: { id: current.id },
 			data: current
 		})
@@ -84,7 +84,7 @@ export class UserService {
 	}
 
 	static async logoutCurrent(current: User): Promise<string> {
-		await prismaClient.user.update({ where: { id: current.id }, data: { token: null } })
+		await pc.user.update({ where: { id: current.id }, data: { token: null } })
 		return "ok"
 	}
 }

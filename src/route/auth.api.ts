@@ -12,3 +12,4 @@ authRoute.patch("/api/v1/users/current", UserController.updateCurrent)
 authRoute.delete("/api/v1/users/current", UserController.logoutCurrent)
 
 authRoute.post("/api/v1/contacts", ContactController.create)
+authRoute.post("/api/v1/contacts/:contactID(\\d+)", ContactController.get)
