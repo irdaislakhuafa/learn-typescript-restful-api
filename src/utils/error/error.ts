@@ -1,3 +1,4 @@
+
 export class ResponseError extends Error {
 	public readonly func: string = "";
 	public readonly line: string = "";
@@ -37,5 +38,14 @@ export class ResponseError extends Error {
 				this.func = caller.func + "()"
 			}
 		}
+	}
+
+	public caller(formatFn?: (e: ResponseError) => ResponseError): ResponseError {
+		if (formatFn) {
+			return formatFn(this)
+		} else {
+			this.message = `${this.file}:${this.line} -- ${this.message}`
+		}
+		return this
 	}
 }

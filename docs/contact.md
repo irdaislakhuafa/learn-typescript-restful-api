@@ -43,7 +43,7 @@ Response (failed):
 
 ## Get Contact
 
-Endpoint: GET /api/v1/contacts/:id
+Endpoint: GET /api/v1/contacts/:contactID
 
 Request Header:
 

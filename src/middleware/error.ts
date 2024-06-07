@@ -16,7 +16,7 @@ export const middlewareError = async (err: Error, req: Request, res: Response, n
 
 	if (err) {
 		if (err instanceof ResponseError) {
-			l.error(`${err.file}:${err.line} -- ${err.message}`)
+			l.error(err.caller().message)
 			response = { errors: err.message.split(", ") }
 			res.status(err.code).json(response).end()
 		} else {
