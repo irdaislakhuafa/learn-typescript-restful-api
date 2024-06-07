@@ -114,4 +114,18 @@ describe("GET /api/v1/contacts/:contactID", () => {
 		expect(body.data?.email).toBe(contact?.email)
 		expect(body.data?.phone).toBe(contact?.phone)
 	})
+
+	it("must contact not found", async () => {
+		const contact = await ContactTest.get()
+		expect(contact).toBeTruthy()
+
+		const url = `/api/v1/contacts/${(contact?.id || 0) + 1}`
+		const res = await supertest(web)
+			.get(url)
+			.set(Constant.X_API_TOKEN, "test")
+
+		const body = (res.body as ResponseData<ContactResponse>)
+
+		expect(res.status).toBe(Code.NOT_FOUND)
+	})
 })
