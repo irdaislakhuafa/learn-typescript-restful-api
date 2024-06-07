@@ -1,10 +1,12 @@
 import supertest from "supertest"
+import { validate } from "uuid"
 import { log } from "../../src/application/log"
 import { web } from "../../src/application/web"
 import { ResponseData } from "../../src/business/model/generic.model"
 import { LoginUserRequest, RegisterUserRequest, UserResponse } from "../../src/business/model/user.model"
 import { Code } from "../../src/utils/code/code"
-import { UserUtil } from "./util.test"
+import { Constant } from "../../src/utils/constant/constant"
+import { UserUtil } from "./util"
 
 describe("POST /api/v1/auth/register", () => {
 	it("must return error if username already exists", async () => {
@@ -54,14 +56,15 @@ describe("POST /api/v1/auth/register", () => {
 		log.debug(res.body)
 		expect(res.status).toBe(Code.SUCCESS)
 		expect(body.errors).toBeFalsy()
+		expect(body.data).toBeTruthy()
 		expect(body.data?.name).toBe("test")
 		expect(body.data?.username).toBe("test")
 	})
 })
 
 describe("POST /api/v1/auth/login", () => {
-	afterEach(UserUtil.delete)
-	beforeEach(UserUtil.create)
+	afterEach(async () => await UserUtil.delete())
+	beforeEach(async () => await UserUtil.create())
 
 	it("login must success", async () => {
 		const res = await supertest(web)
@@ -78,6 +81,7 @@ describe("POST /api/v1/auth/login", () => {
 		expect(body.data?.name).toBe("test")
 		expect(body.data?.username).toBe("test")
 		expect(body.data?.token).toBeDefined()
+		expect(validate(body.data?.token!)).toBe(true)
 	})
 
 	it("login rejected coz username is wrong", async () => {
@@ -109,5 +113,23 @@ describe("POST /api/v1/auth/login", () => {
 		expect(body.data).toBeFalsy()
 		expect(body.errors).toBeTruthy()
 		expect(body.errors?.join(", ").includes("password")).toBeTruthy()
+	})
+})
+
+describe("GET /api/v1/users/current", () => {
+	beforeEach(async () => await UserUtil.create())
+	afterEach(async () => await UserUtil.delete())
+
+	it("get current user must success", async () => {
+		const res = await supertest(web)
+			.get("/api/v1/users/current")
+			.set(Constant.X_API_TOKEN, "test")
+
+		const body = (res.body as ResponseData<UserResponse>)
+		expect(res.status).toBe(Code.SUCCESS)
+		expect(body.errors).toBeUndefined()
+		expect(body.data).toBeDefined()
+		expect(body.data?.name).toBe("test")
+		expect(body.data?.username).toBe("test")
 	})
 })
