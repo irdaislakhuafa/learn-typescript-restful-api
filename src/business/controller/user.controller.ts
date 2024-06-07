@@ -44,4 +44,14 @@ export class UserController {
 			} else { throw new ResponseError(Code.UNAUTHORIZED, "unauthorized") }
 		} catch (e) { next(e) }
 	}
+
+	static async logoutCurrent(req: AuthRequest, res: Response, next: NextFunction) {
+		try {
+			if (req.user) {
+				const result = await UserService.logoutCurrent(req.user)
+				const response: ResponseData<UserResponse> = { data: result }
+				res.status(Code.SUCCESS).json(response).end()
+			} else { throw new ResponseError(Code.UNAUTHORIZED, "unauthorized") }
+		} catch (e) { next(e) }
+	}
 }
