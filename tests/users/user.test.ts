@@ -204,4 +204,18 @@ describe("PATCH /api/v1/users/current", () => {
 		expect(body.errors?.join(", ").includes("name")).toBe(true)
 		expect(body.errors?.join(", ").includes("password")).toBe(true)
 	})
+
+	it("test must rejected by invalid token", async () => {
+		const res = await supertest(web)
+			.patch(url)
+			.set(Constant.X_API_TOKEN, "wrong")
+			.send({ name: "", password: "" } as UpdateUserRequest)
+
+		const body = (res.body as ResponseData<UserResponse>)
+		expect(res.status).toBe(Code.UNAUTHORIZED)
+		expect(body.errors).toBeDefined()
+		expect(body.errors?.join(", ").includes("name")).toBe(false)
+		expect(body.errors?.join(", ").includes("password")).toBe(false)
+		expect(body.errors?.join(", ").includes("unauthorized")).toBe(true)
+	})
 })
