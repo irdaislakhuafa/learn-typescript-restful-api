@@ -26,4 +26,4 @@ export class ContactController {
 			} else { throw new ResponseError(Code.UNAUTHORIZED, "unauthorized") }
 		} catch (e) { next(e) }
 	}
-}
+} 
