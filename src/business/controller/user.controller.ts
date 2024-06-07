@@ -49,7 +49,7 @@ export class UserController {
 		try {
 			if (req.user) {
 				const result = await UserService.logoutCurrent(req.user)
-				const response: ResponseData<UserResponse> = { data: result }
+				const response: ResponseData<string> = { data: result }
 				res.status(Code.SUCCESS).json(response).end()
 			} else { throw new ResponseError(Code.UNAUTHORIZED, "unauthorized") }
 		} catch (e) { next(e) }
