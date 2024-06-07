@@ -7,7 +7,7 @@ import { Validation } from "../../utils/validation/validation";
 import { toContactResponse, type ContactResponse, type CreateContactRequest } from "../model/contact.model";
 
 export class ContactService {
-	static async create(currentUser: User, params: CreateContactRequest): Promise<ContactResponse> {
+	static async create(owner: User, params: CreateContactRequest): Promise<ContactResponse> {
 		const [filteredParam, err] = await Validation.validate(ContactValidation.CREATE, params)
 		if (err) {
 			throw new ResponseError(Code.BAD_REQUEST, err.message)
@@ -15,7 +15,7 @@ export class ContactService {
 
 		const created = await prismaClient.contact.create({
 			data: {
-				...{ user_id: currentUser.id },
+				...{ user_id: owner.id },
 				...filteredParam
 			}
 		})
