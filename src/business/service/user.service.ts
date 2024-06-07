@@ -60,4 +60,8 @@ export class UserService {
 		result.token = updated.token!
 		return result
 	}
+
+	static async getCurrent(params: User): Promise<UserResponse> {
+		return toUserResponse(params)
+	}
 }
