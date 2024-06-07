@@ -119,10 +119,11 @@ describe("POST /api/v1/auth/login", () => {
 describe("GET /api/v1/users/current", () => {
 	beforeEach(UserUtil.create)
 	afterEach(UserUtil.delete)
+	const url = "/api/v1/users/current"
 
 	it("get current user must success", async () => {
 		const res = await supertest(web)
-			.get("/api/v1/users/current")
+			.get(url)
 			.set(Constant.X_API_TOKEN, "test")
 
 		const body = (res.body as ResponseData<UserResponse>)
@@ -131,5 +132,16 @@ describe("GET /api/v1/users/current", () => {
 		expect(body.data).toBeDefined()
 		expect(body.data?.name).toBe("test")
 		expect(body.data?.username).toBe("test")
+	})
+
+	it("get current user unauthorized if token invalid", async () => {
+		const res = await supertest(web)
+			.get(url)
+			.set(Constant.X_API_TOKEN, "wrong")
+
+		const body = (res.body as ResponseData<UserResponse>)
+		expect(res.status).toBe(Code.UNAUTHORIZED)
+		expect(body.errors).toBeDefined()
+		expect(body.errors?.join(", ").includes("unauthorized")).toBeTruthy()
 	})
 })
