@@ -219,3 +219,37 @@ describe("PATCH /api/v1/users/current", () => {
 		expect(body.errors?.join(", ").includes("unauthorized")).toBe(true)
 	})
 })
+
+describe(" DELETE /api/v1/users/current", () => {
+	beforeEach(UserUtil.create)
+	afterEach(UserUtil.delete)
+	const url = "/api/v1/users/current"
+
+	it("test logout must rejected coz user never login", async () => {
+		const res = await supertest(web)
+			.delete(url)
+			.set(Constant.X_API_TOKEN, "xx")
+
+		const body = (res.body as ResponseData<string>)
+		expect(res.status).toBe(Code.UNAUTHORIZED)
+		expect(body.data).toBeUndefined()
+		expect(body.errors).toBeDefined()
+		expect(body.errors?.join(", ").includes("unauthorized")).toBeTruthy()
+	})
+
+	it("test logout success", async () => {
+		const res = await supertest(web)
+			.delete(url)
+			.set(Constant.X_API_TOKEN, "test")
+
+		const user = await UserUtil.get()
+		expect(user).toBeTruthy()
+
+		const body = (res.body as ResponseData<string>)
+		expect(res.status).toBe(Code.SUCCESS)
+		expect(body.errors).toBeUndefined()
+		expect(body.data).toBeDefined()
+		expect(body.data).toBe("ok")
+		expect(user?.token).toBeFalsy()
+	})
+})
