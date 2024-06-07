@@ -36,7 +36,7 @@ export class ContactService {
 			throw new ResponseError(Code.NOT_FOUND, `contact with id ${contactID} in user ${owner.username} not found`)
 		}
 
-		const result = toContactResponse(contact)
+		const result = await toContactResponse(contact)
 		return result
 	}
 }
