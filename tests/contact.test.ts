@@ -63,4 +63,24 @@ describe("POST /api/v1/contacts", () => {
 		expect(body.errors?.join(", ").includes("first_name")).toBeTruthy()
 		expect(body.errors?.join(", ").includes("phone")).toBeTruthy()
 	})
+
+	it("test must rejected if create new contact coz unauthorized", async () => {
+		const user = await UserTest.get()
+		expect(user).toBeTruthy()
+
+
+		const res = await supertest(web)
+			.post(url)
+			.set(Constant.X_API_TOKEN, "wrong")
+			.send({
+				first_name: "",
+				phone: "",
+			} as CreateContactRequest)
+
+		const body = (res.body as ResponseData<ContactResponse>)
+		expect(res.status).toBe(Code.UNAUTHORIZED)
+		expect(body.data).toBeUndefined()
+		expect(body.errors).toBeDefined()
+		expect(body.errors?.join(", ").includes("unauthorized")).toBeTruthy()
+	})
 })
