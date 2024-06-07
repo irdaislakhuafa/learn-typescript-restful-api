@@ -63,8 +63,8 @@ describe("POST /api/v1/auth/register", () => {
 })
 
 describe("POST /api/v1/auth/login", () => {
-	afterEach(async () => await UserUtil.delete())
-	beforeEach(async () => await UserUtil.create())
+	afterEach(UserUtil.delete)
+	beforeEach(UserUtil.create)
 
 	it("login must success", async () => {
 		const res = await supertest(web)
@@ -117,8 +117,8 @@ describe("POST /api/v1/auth/login", () => {
 })
 
 describe("GET /api/v1/users/current", () => {
-	beforeEach(async () => await UserUtil.create())
-	afterEach(async () => await UserUtil.delete())
+	beforeEach(UserUtil.create)
+	afterEach(UserUtil.delete)
 
 	it("get current user must success", async () => {
 		const res = await supertest(web)
