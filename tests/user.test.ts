@@ -1,18 +1,18 @@
 import bcrypt from "bcrypt"
 import supertest from "supertest"
 import { validate } from "uuid"
-import { prismaClient } from "../../src/application/db"
-import { log } from "../../src/application/log"
-import { web } from "../../src/application/web"
-import { ResponseData } from "../../src/business/model/generic.model"
-import { LoginUserRequest, RegisterUserRequest, UpdateUserRequest, UserResponse } from "../../src/business/model/user.model"
-import { Code } from "../../src/utils/code/code"
-import { Constant } from "../../src/utils/constant/constant"
-import { UserUtil } from "./util"
+import { prismaClient } from "../src/application/db"
+import { log } from "../src/application/log"
+import { web } from "../src/application/web"
+import { ResponseData } from "../src/business/model/generic.model"
+import { LoginUserRequest, RegisterUserRequest, UpdateUserRequest, UserResponse } from "../src/business/model/user.model"
+import { Code } from "../src/utils/code/code"
+import { Constant } from "../src/utils/constant/constant"
+import { UserTest } from "./util"
 
 describe("POST /api/v1/auth/register", () => {
 	it("must return error if username already exists", async () => {
-		await UserUtil.create()
+		await UserTest.create()
 		const res = await supertest(web)
 			.post("/api/v1/auth/register")
 			.send({
@@ -24,7 +24,7 @@ describe("POST /api/v1/auth/register", () => {
 		log.debug(res.body)
 		expect(res.status).toBe(Code.BAD_REQUEST)
 		expect((res.body as ResponseData<any>).errors).toBeTruthy()
-		await UserUtil.delete()
+		await UserTest.delete()
 	})
 
 	it("must return error if request invalid", async () => {
@@ -45,7 +45,7 @@ describe("POST /api/v1/auth/register", () => {
 	})
 
 	it("must success", async () => {
-		await UserUtil.delete()
+		await UserTest.delete()
 		const res = await supertest(web)
 			.post("/api/v1/auth/register")
 			.send({
@@ -65,8 +65,8 @@ describe("POST /api/v1/auth/register", () => {
 })
 
 describe("POST /api/v1/auth/login", () => {
-	afterEach(UserUtil.delete)
-	beforeEach(UserUtil.create)
+	afterEach(UserTest.delete)
+	beforeEach(UserTest.create)
 
 	it("login must success", async () => {
 		const res = await supertest(web)
@@ -119,8 +119,8 @@ describe("POST /api/v1/auth/login", () => {
 })
 
 describe("GET /api/v1/users/current", () => {
-	beforeEach(UserUtil.create)
-	afterEach(UserUtil.delete)
+	beforeEach(UserTest.create)
+	afterEach(UserTest.delete)
 	const url = "/api/v1/users/current"
 
 	it("get current user must success", async () => {
@@ -149,8 +149,8 @@ describe("GET /api/v1/users/current", () => {
 })
 
 describe("PATCH /api/v1/users/current", () => {
-	beforeEach(UserUtil.create)
-	afterEach(UserUtil.delete)
+	beforeEach(UserTest.create)
+	afterEach(UserTest.delete)
 
 	const url = "/api/v1/users/current"
 
@@ -221,8 +221,8 @@ describe("PATCH /api/v1/users/current", () => {
 })
 
 describe(" DELETE /api/v1/users/current", () => {
-	beforeEach(UserUtil.create)
-	afterEach(UserUtil.delete)
+	beforeEach(UserTest.create)
+	afterEach(UserTest.delete)
 	const url = "/api/v1/users/current"
 
 	it("test logout must rejected coz user never login", async () => {
@@ -242,7 +242,7 @@ describe(" DELETE /api/v1/users/current", () => {
 			.delete(url)
 			.set(Constant.X_API_TOKEN, "test")
 
-		const user = await UserUtil.get()
+		const user = await UserTest.get()
 		expect(user).toBeTruthy()
 
 		const body = (res.body as ResponseData<string>)

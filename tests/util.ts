@@ -1,7 +1,8 @@
-import { User } from "@prisma/client"
+import { Contact, User } from "@prisma/client"
 import bcrypt from "bcrypt"
-import { prismaClient } from "../../src/application/db"
-export class UserUtil {
+import { prismaClient } from "../src/application/db"
+
+export class UserTest {
 	static async delete() {
 		const isExists = (await prismaClient.user.count({ where: { username: "test" } })) > 0
 		if (isExists) {
@@ -25,5 +26,29 @@ export class UserUtil {
 
 	static async get(): Promise<User | null> {
 		return await prismaClient.user.findUnique({ where: { username: "test" } })
+	}
+}
+
+export class ContactTest {
+	static async delete() {
+		await prismaClient.contact.deleteMany({
+			where: {
+				user: {
+					username: "test"
+				}
+			}
+		})
+	}
+
+	static async getAll(): Promise<Contact[]> {
+		return await prismaClient.contact.findMany({
+			where: {
+				user: { username: "test" }
+			}
+		})
+	}
+
+	static async get(id: number): Promise<Contact | null> {
+		return await prismaClient.contact.findFirst({ where: { user: { username: "test" } } })
 	}
 }
