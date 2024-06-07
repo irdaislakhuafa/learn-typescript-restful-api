@@ -191,4 +191,17 @@ describe("PATCH /api/v1/users/current", () => {
 		expect(body.data?.username).toBe("test")
 		expect((await bcrypt.compare("xx", updatedUser?.password || ""))).toBe(true)
 	})
+
+	it("test must rejected invalid req body", async () => {
+		const res = await supertest(web)
+			.patch(url)
+			.set(Constant.X_API_TOKEN, "test")
+			.send({ name: "", password: "" } as UpdateUserRequest)
+
+		const body = (res.body as ResponseData<UserResponse>)
+		expect(res.status).toBe(Code.BAD_REQUEST)
+		expect(body.errors).toBeDefined()
+		expect(body.errors?.join(", ").includes("name")).toBe(true)
+		expect(body.errors?.join(", ").includes("password")).toBe(true)
+	})
 })
