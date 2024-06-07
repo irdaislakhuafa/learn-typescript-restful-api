@@ -1,6 +1,8 @@
 import { Contact, User } from "@prisma/client"
 import bcrypt from "bcrypt"
 import { pc } from "../src/application/db"
+import { Code } from "../src/utils/code/code"
+import { ResponseError } from "../src/utils/error/error"
 
 export class UserTest {
 	static async delete() {
@@ -48,7 +50,24 @@ export class ContactTest {
 		})
 	}
 
-	static async get(id: number): Promise<Contact | null> {
+	static async get(): Promise<Contact | null> {
 		return await pc.contact.findFirst({ where: { user: { username: "test" } } })
+	}
+
+	static async create(): Promise<Contact | null> {
+		const user = await UserTest.get()
+		if (!user) {
+			throw new ResponseError(Code.INTERNAL_SERVER_ERROR, "user not found")
+		}
+
+		return await pc.contact.create({
+			data: {
+				first_name: "test",
+				phone: "1".repeat(12),
+				email: "test@gmail.com",
+				last_name: "test",
+				user_id: user.id,
+			}
+		})
 	}
 }

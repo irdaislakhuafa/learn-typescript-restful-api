@@ -37,7 +37,7 @@ describe("POST /api/v1/contacts", () => {
 		expect(body.data?.id).toBeDefined()
 
 		if (body.data?.id) {
-			const contact = await ContactTest.get(body.data?.id)
+			const contact = await ContactTest.get()
 			expect(contact?.user_id).toBe(user?.id)
 		}
 
@@ -82,5 +82,36 @@ describe("POST /api/v1/contacts", () => {
 		expect(body.data).toBeUndefined()
 		expect(body.errors).toBeDefined()
 		expect(body.errors?.join(", ").includes("unauthorized")).toBeTruthy()
+	})
+})
+
+describe("GET /api/v1/contacts/:contactID", () => {
+	beforeEach(async () => {
+		await UserTest.create()
+		await ContactTest.create()
+	})
+	afterEach(async () => {
+		await ContactTest.delete()
+		await UserTest.delete()
+	})
+
+	it("must got contact", async () => {
+		const contact = await ContactTest.get()
+		expect(contact).toBeTruthy()
+
+		const url = `/api/v1/contacts/${contact?.id}`
+		const res = await supertest(web)
+			.get(url)
+			.set(Constant.X_API_TOKEN, "test")
+
+		const body = (res.body as ResponseData<ContactResponse>)
+
+		expect(res.status).toBe(Code.SUCCESS)
+		expect(body.data).toBeDefined()
+		expect(body.data?.id).toBe(contact?.id)
+		expect(body.data?.first_name).toBe(contact?.first_name)
+		expect(body.data?.last_name).toBe(contact?.last_name)
+		expect(body.data?.email).toBe(contact?.email)
+		expect(body.data?.phone).toBe(contact?.phone)
 	})
 })
