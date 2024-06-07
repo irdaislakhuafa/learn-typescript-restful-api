@@ -1,9 +1,11 @@
+import bcrypt from "bcrypt"
 import supertest from "supertest"
 import { validate } from "uuid"
+import { prismaClient } from "../../src/application/db"
 import { log } from "../../src/application/log"
 import { web } from "../../src/application/web"
 import { ResponseData } from "../../src/business/model/generic.model"
-import { LoginUserRequest, RegisterUserRequest, UserResponse } from "../../src/business/model/user.model"
+import { LoginUserRequest, RegisterUserRequest, UpdateUserRequest, UserResponse } from "../../src/business/model/user.model"
 import { Code } from "../../src/utils/code/code"
 import { Constant } from "../../src/utils/constant/constant"
 import { UserUtil } from "./util"
@@ -143,5 +145,77 @@ describe("GET /api/v1/users/current", () => {
 		expect(res.status).toBe(Code.UNAUTHORIZED)
 		expect(body.errors).toBeDefined()
 		expect(body.errors?.join(", ").includes("unauthorized")).toBeTruthy()
+	})
+})
+
+describe("PATCH /api/v1/users/current", () => {
+	beforeEach(UserUtil.create)
+	afterEach(UserUtil.delete)
+
+	const url = "/api/v1/users/current"
+
+	it("must success update name", async () => {
+		const res = await supertest(web)
+			.patch(url)
+			.set(Constant.X_API_TOKEN, "test")
+			.send({
+				name: "test 1"
+			} as UpdateUserRequest)
+
+		const body = (res.body as ResponseData<UserResponse>)
+		expect(res.status).toBe(Code.SUCCESS)
+		expect(body.errors).toBeUndefined()
+		expect(body.data).toBeDefined()
+		expect(body.data?.name).toBe("test 1")
+		expect(body.data?.username).toBe("test")
+	})
+
+	it("must success update password", async () => {
+		const oldUser = await prismaClient.user.findFirst({ where: { username: "test" } })
+		expect(oldUser).toBeTruthy()
+
+		const res = await supertest(web)
+			.patch(url)
+			.set(Constant.X_API_TOKEN, "test")
+			.send({ password: "xx" } as UpdateUserRequest)
+
+		const updatedUser = await prismaClient.user.findFirst({ where: { username: "test" } })
+		expect(updatedUser).toBeTruthy()
+
+
+		const body = (res.body as ResponseData<UserResponse>)
+		expect(res.status).toBe(Code.SUCCESS)
+		expect(body.errors).toBeUndefined()
+		expect(body.data).toBeDefined()
+		expect(body.data?.name).toBe("test")
+		expect(body.data?.username).toBe("test")
+		expect((await bcrypt.compare("xx", updatedUser?.password || ""))).toBe(true)
+	})
+
+	it("test must rejected invalid req body", async () => {
+		const res = await supertest(web)
+			.patch(url)
+			.set(Constant.X_API_TOKEN, "test")
+			.send({ name: "", password: "" } as UpdateUserRequest)
+
+		const body = (res.body as ResponseData<UserResponse>)
+		expect(res.status).toBe(Code.BAD_REQUEST)
+		expect(body.errors).toBeDefined()
+		expect(body.errors?.join(", ").includes("name")).toBe(true)
+		expect(body.errors?.join(", ").includes("password")).toBe(true)
+	})
+
+	it("test must rejected by invalid token", async () => {
+		const res = await supertest(web)
+			.patch(url)
+			.set(Constant.X_API_TOKEN, "wrong")
+			.send({ name: "", password: "" } as UpdateUserRequest)
+
+		const body = (res.body as ResponseData<UserResponse>)
+		expect(res.status).toBe(Code.UNAUTHORIZED)
+		expect(body.errors).toBeDefined()
+		expect(body.errors?.join(", ").includes("name")).toBe(false)
+		expect(body.errors?.join(", ").includes("password")).toBe(false)
+		expect(body.errors?.join(", ").includes("unauthorized")).toBe(true)
 	})
 })

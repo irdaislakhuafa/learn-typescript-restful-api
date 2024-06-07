@@ -106,7 +106,7 @@ Request:
 ```json
 {
   "name": "Irda Islakhu Afa",
-  "username": "irdaislakhuafa"
+  "password": "irdaislakhuafa"
 }
 ```
 

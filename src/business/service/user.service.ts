@@ -6,7 +6,7 @@ import { Code } from "../../utils/code/code";
 import { ResponseError } from "../../utils/error/error";
 import { UserValidation } from "../../utils/validation/user.validation";
 import { Validation } from "../../utils/validation/validation";
-import type { LoginUserRequest, RegisterUserRequest, UserResponse } from "../model/user.model";
+import type { LoginUserRequest, RegisterUserRequest, UpdateUserRequest, UserResponse } from "../model/user.model";
 import { toUserResponse } from '../model/user.model';
 
 export class UserService {
@@ -63,5 +63,23 @@ export class UserService {
 
 	static async getCurrent(params: User): Promise<UserResponse> {
 		return toUserResponse(params)
+	}
+
+	static async updateCurrent(current: User, params: UpdateUserRequest): Promise<UserResponse> {
+		const [filteredParam, err] = await Validation.validate(UserValidation.UPDATE_CURRENT, params)
+		if (err) {
+			throw new ResponseError(Code.BAD_REQUEST, err.message)
+		}
+
+		current.name = filteredParam.name ? filteredParam.name : current.name
+		current.password = filteredParam.password ? await bcrypt.hash(filteredParam.password, 10) : current.password
+
+		const updated = await prismaClient.user.update({
+			where: { id: current.id },
+			data: current
+		})
+
+		const result = toUserResponse(updated)
+		return result
 	}
 }
